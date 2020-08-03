@@ -9,7 +9,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch import nn
 
-from utils import tensor_to_img
+from utils import to_img
 from dataset import ProjectDataset
 from models.DAE import AE
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset =  ProjectDataset(path_to_img_folder)
+    dataset =  ProjectDataset(path_to_img_folder, endswith='.jpg')
     trainloader = DataLoader(dataset, batch_size = 1, num_workers=2)
 
     ##### Training
@@ -58,6 +58,6 @@ if __name__ == "__main__":
         print('epoch [{}/{}], loss:{:.4f}'.format(epoch + 1, num_epochs, loss.data))
 
         if epoch % 10 == 0:
-            to_save = tensor_to_img(outputs[idx_to_save])
+            to_save = to_img(outputs[idx_to_save])
             to_save_path = osp.join(save_run_as,'epoch{}.jpg'.format(epoch))
             plt.imsave(to_save_path, np.uint8(to_save*255))
