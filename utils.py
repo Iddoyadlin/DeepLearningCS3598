@@ -4,12 +4,11 @@ import os
 import os.path as osp
 from PIL import Image
 from tqdm import tqdm
-from torchvision import transforms
 
-def tensor_to_img(img):
-    to_pil= transforms.ToPILImage()
-    img = to_pil(img)
-    img = np.asarray(img)
+def to_img(img):
+    img = 0.5 * (img + 1)
+    img = img.clamp(0, 1)
+    img = img.view(img.size(0),3, 64, 64)
     return img
 
 def add_noise_to_img(img):

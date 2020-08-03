@@ -7,7 +7,7 @@ import PIL.Image as Image
 import matplotlib.pyplot as plt
 import numpy as np
 
-from utils import add_noise_to_img
+from utils import add_noise_to_img, to_img
 
 class ProjectDataset(Dataset):
 
@@ -22,8 +22,8 @@ class ProjectDataset(Dataset):
         self.root_dir = root_dir
         self.img_list = [img_path for img_path in img_list_temp if img_path.endswith(endswith)]
         self.transform = transforms.Compose([
-            transforms.ToTensor()#,
-            #transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
 
     def __len__(self):
@@ -47,8 +47,8 @@ if __name__ == '__main__':
     idx = 0
 
     test_Dataset_class = ProjectDataset(path)
-    image = test_Dataset_class[idx]
-    toPil = transforms.ToPILImage()
-    img = toPil(image)
-    img = np.asarray(img)
+    test = test_Dataset_class[idx]
+    image = test['img'].unsqueeze(0)
+    img = to_img(image)
+    img = np.asarray(img)[0]
     plt.imshow(img)
