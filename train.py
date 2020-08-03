@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     #Paths
     path_to_img_folder = 'images'
-    path_to_save = r'C:\Users\Beitzy\Desktop\Dan\MSc\ImageProcessingDeepLearning\runs'
+    path_to_save = r'runs'
 
     ### Model Settings
     lr = 1e-03
