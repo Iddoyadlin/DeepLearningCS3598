@@ -9,7 +9,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch import nn
 
-from utils import tensor_to_img
+from utils import to_img
 from dataset import ProjectDataset
 from models.DAE import AE
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
 
             # forward + backward + optimize
-            outputs = model(noise_img)
+            outputs, vector = model(noise_img)
             loss = criterion(outputs, img)
             loss.backward()
             optimizer.step()
@@ -58,6 +58,6 @@ if __name__ == "__main__":
         print('epoch [{}/{}], loss:{:.4f}'.format(epoch + 1, num_epochs, loss.data))
 
         if epoch % 10 == 0:
-            to_save = tensor_to_img(outputs[idx_to_save])
+            to_save = to_img(outputs[idx_to_save])
             to_save_path = osp.join(save_run_as,'epoch{}.jpg'.format(epoch))
             plt.imsave(to_save_path, np.uint8(to_save*255))
