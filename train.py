@@ -11,9 +11,7 @@ from tqdm import tqdm
 
 from dataset import ProjectDataset
 from models.DAE import AE
-from utils import to_img
-
-
+from utils import to_img, compare_models
 
 if __name__ == "__main__":
 
