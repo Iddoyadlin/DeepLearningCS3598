@@ -25,6 +25,9 @@ if __name__ == "__main__":
     num_epochs = 100
 
     model = AE()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
+
     criterion = nn.MSELoss()
     #criterion = nn.SmoothL1Loss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
@@ -36,11 +39,8 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset =  ProjectDataset(path_to_img_folder, endswith='.jpg')
-    trainloader = DataLoader(dataset, batch_size=1, num_workers=2)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.to(device)
-
+    dataset =  ProjectDataset(path_to_img_folder,device, endswith='.jpg')
+    trainloader = DataLoader(dataset, batch_size=4, num_workers=0)
     ##### Training
 
     loss_history = []
@@ -66,9 +66,14 @@ if __name__ == "__main__":
 
         if epoch % 10 == 0:
             img_temp = to_img(outputs)
-            img_to_save = np.asarray(img_temp[idx_to_save].permute(1, 2, 0).detach())
+            img_to_save = np.asarray(img_temp[idx_to_save].permute(1, 2, 0).detach().cpu())
             to_save_path = osp.join(save_run_as,'epoch{}.jpg'.format(epoch))
             plt.imsave(to_save_path, np.uint8(img_to_save*255))
+
+    plt.plot(loss_history)
+    plt.xlabel('Iteration number')
+    plt.ylabel('Loss value')
+    plt.show()
 
     model.save(os.path.join(save_run_as, 'model.pth'))
 
