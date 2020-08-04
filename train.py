@@ -20,11 +20,13 @@ if __name__ == "__main__":
     path_to_save = r'C:\Users\Beitzy\Desktop\Dan\MSc\ImageProcessingDeepLearning\runs'
 
     ### Model Settings
-    lr = 1e-03
-    wd = 1e-05
+    lr = 1e-3
+    wd = 1e-5
     num_epochs = 100
+
     model = AE()
     criterion = nn.MSELoss()
+    #criterion = nn.SmoothL1Loss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
 
     #Run Settings
