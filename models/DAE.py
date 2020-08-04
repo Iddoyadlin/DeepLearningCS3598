@@ -1,7 +1,4 @@
-import numpy as np
-import torch
 from torch import nn
-from torchvision import transforms
 
 
 class Encoder(nn.Module):
@@ -71,6 +68,6 @@ class AE(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        vector = x.reshape(-1,2)
+        vector = x.reshape(-1, 2)
         x = self.decoder(vector)
         return x, vector

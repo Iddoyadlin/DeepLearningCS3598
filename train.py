@@ -1,23 +1,22 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import os.path as osp
 import os
+import os.path as osp
+
+import matplotlib.pyplot as plt
+import numpy as np
+import torch.optim as optim
+from torch import nn
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-import torch
-import torch.optim as optim
-from torch.utils.data import DataLoader
-from torch import nn
-
-from utils import to_img
 from dataset import ProjectDataset
 from models.DAE import AE
+from utils import to_img
 
 if __name__ == "__main__":
 
     #Paths
     path_to_img_folder = 'images'
-    path_to_save = r'C:\Users\Beitzy\Desktop\Dan\MSc\ImageProcessingDeepLearning\runs'
+    path_to_save = 'runs'
 
     ### Model Settings
     lr = 1e-3
@@ -35,8 +34,8 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset =  ProjectDataset(path_to_img_folder)
-    trainloader = DataLoader(dataset, batch_size = 1, num_workers=2)
+    dataset =  ProjectDataset(path_to_img_folder, endswith='.jpg')
+    trainloader = DataLoader(dataset, batch_size=1, num_workers=2)
 
     ##### Training
 

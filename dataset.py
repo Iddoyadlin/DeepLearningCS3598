@@ -1,7 +1,6 @@
 from torch.utils.data import Dataset
 from torchvision import transforms
 import os
-import os.path as osp
 import torch
 import PIL.Image as Image
 import matplotlib.pyplot as plt
@@ -11,7 +10,7 @@ from utils import add_noise_to_img, to_img
 
 class ProjectDataset(Dataset):
 
-    def __init__(self, root_dir, endswith = '.png'):
+    def __init__(self, root_dir, endswith = 'image_0.jpg'):
         """
         Args:
             root_dir (string): Directory with all the images.
@@ -48,7 +47,8 @@ if __name__ == '__main__':
 
     test_Dataset_class = ProjectDataset(path)
     test = test_Dataset_class[idx]
-    image = test['img'].unsqueeze(0)
-    img = to_img(image)
-    img = np.asarray(img)[0]
+    image = test['noise_img'].unsqueeze(0)
+    img = to_img(image)[0].permute(1,2,0)
+    img = np.asarray(img)
     plt.imshow(img)
+    plt.show()
