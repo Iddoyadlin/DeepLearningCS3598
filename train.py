@@ -3,6 +3,7 @@ import os.path as osp
 
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 import torch.optim as optim
 from torch import nn
 from torch.utils.data import DataLoader
@@ -11,6 +12,8 @@ from tqdm import tqdm
 from dataset import ProjectDataset
 from models.DAE import AE
 from utils import to_img
+
+
 
 if __name__ == "__main__":
 
@@ -30,12 +33,15 @@ if __name__ == "__main__":
 
     #Run Settings
     idx_to_save = 0
-    save_run_as = osp.join(path_to_save,'run_lr_{}_wd_{}'.format(lr,wd))
+    folder = 'run_lr_{}_wd_{}'.format(lr,wd)
+    save_run_as = osp.join(path_to_save,folder)
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
     dataset =  ProjectDataset(path_to_img_folder, endswith='.jpg')
     trainloader = DataLoader(dataset, batch_size=1, num_workers=2)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
 
     ##### Training
 
@@ -65,5 +71,14 @@ if __name__ == "__main__":
             img_to_save = np.asarray(img_temp[idx_to_save].permute(1, 2, 0).detach())
             to_save_path = osp.join(save_run_as,'epoch{}.jpg'.format(epoch))
             plt.imsave(to_save_path, np.uint8(img_to_save*255))
+
+    model.save(os.path.join(save_run_as, 'model.pth'))
+
+    new_model = AE()
+    new_model.load(osp.join(save_run_as, 'model.pth'))
+
+    print('before saving model was:\n {}'.format(model.state_dict()))
+    print('before saving model was:\n {}'.format(new_model.state_dict()))
+    compare_models(model, new_model)
 
     print('***** Done training *****\n')
