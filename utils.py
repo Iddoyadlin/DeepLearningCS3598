@@ -5,6 +5,13 @@ import os.path as osp
 from PIL import Image
 from tqdm import tqdm
 
+def gram_matrix(y):
+    (b, ch, h, w) = y.size()
+    features = y.view(b, ch, w * h)
+    features_t = features.transpose(1, 2)
+    gram = features.bmm(features_t) / (ch * h * w)
+    return gram
+
 def to_img(img):
     img = 0.5 * (img + 1)
     img = img.clamp(0, 1)
