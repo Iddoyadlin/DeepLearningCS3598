@@ -10,7 +10,7 @@ from utils import add_noise_to_img, to_img
 
 class ProjectDataset(Dataset):
 
-    def __init__(self, root_dir,device, endswith = 'image_0.jpg'):
+    def __init__(self, root_dir,device, endswith = '.jpg'):
         """
         Args:
             root_dir (string): Directory with all the images.
@@ -26,6 +26,9 @@ class ProjectDataset(Dataset):
             ])
         self.device= device
 
+    def get_img_paths(self):
+        return self.img_list
+
     def __len__(self):
         return len(self.img_list)
 
@@ -37,7 +40,7 @@ class ProjectDataset(Dataset):
         image = Image.open(img_name)
         image = self.transform(image)
         image_noise = add_noise_to_img(image)
-        sample = {'noise_img': image_noise.to(self.device), 'img' : image.to(self.device)}
+        sample = {'noise_img': image_noise.to(self.device), 'img' : image.to(self.device), 'path': img_name}
 
         return sample
 

@@ -17,7 +17,6 @@ from models.LossNN import LossNetwork
 from utils import to_img, compare_models
 
 if __name__ == "__main__":
-
     #Paths
     path_to_img_folder = 'images'
     path_to_save = 'runs'
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset =  ProjectDataset(path_to_img_folder,device, endswith='.png')
+    dataset =  ProjectDataset(path_to_img_folder,device)
     trainloader = DataLoader(dataset, batch_size=batch_size, num_workers=0, shuffle=True)
 
     ##### Training
