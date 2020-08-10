@@ -20,13 +20,13 @@ if __name__=="__main__":
     dataset = ProjectDataset(path_to_images, device=device)
     data_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
 
-    points = {}
+    points = []
     for i, datum in enumerate(data_loader):
         image_path = datum['path'][0]
         image = datum['img']
         vector = encoder(image)
         z = vector.flatten()
-        points[image_path] = z.tolist()
+        points.append({'z': z.tolist(), 'path': image_path})
 
     with graph_dump_path.open('w') as f:
         json.dump(points, f)
