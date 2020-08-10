@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 if __name__=="__main__":
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     path_to_model = Path('model.pth')
     path_to_images = Path('images/')
     graph_dump_path = Path('encoding.json')
