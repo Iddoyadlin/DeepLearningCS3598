@@ -20,7 +20,7 @@ def to_img(img):
 
 def add_noise_to_img(img):
     noise = torch.randn(img.size()) * 0.2
-    noisy_img = img + noise
+    noisy_img = img + noise.to(img.device)
     return noisy_img
 
 def decompress_npz_to_images(path_to_file, path_to_decompress):
