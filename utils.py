@@ -6,6 +6,9 @@ from PIL import Image
 from tqdm import tqdm
 import shutil
 
+from config import IMAGES_PATH
+
+
 def gram_matrix(y):
     (b, ch, h, w) = y.size()
     features = y.view(b, ch, w * h)
@@ -38,7 +41,7 @@ def decompress_npz_to_images(path_to_file, path_to_decompress):
     """
     data = np.load(path_to_file)['images']
     data = data.reshape([6, 6, 2, 3, 3, 40, 40, 64, 64, 3])
-    data_train = data[0, 0, 0, 0, 0, :, :, :, :, :]
+    data_train = data[0, 0, 0, :, 0, :, :, :, :, :]
     data_train = data_train.reshape(-1, 64, 64, 3)
 
     if not osp.exists(path_to_decompress):
@@ -67,5 +70,5 @@ def compare_models(model_1, model_2):
 if __name__ == '__main__':
 
     path_to_npz = 'mpi3d_toy.npz'
-    path_to_save = 'images'
+    path_to_save = IMAGES_PATH
     decompress_npz_to_images(path_to_npz, path_to_save)

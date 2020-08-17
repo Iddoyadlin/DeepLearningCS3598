@@ -1,1 +1,5 @@
 tqdm
+chart_studio
+torch>=1.6.0
+notebook>=6.1.3
+networkx>=2.4
