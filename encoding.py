@@ -9,12 +9,11 @@ from pathlib import Path
 
 from utils import get_device
 
-if __name__ == "__main__":
+def encode(model_path, images_path, encoding_path):
     device = get_device()
-    path_to_model = Path(MODEL_PATH)
-    path_to_images = Path(IMAGES_PATH)
-    graph_dump_path = Path(ENCODING_PATH)
-
+    path_to_model = Path(model_path)
+    path_to_images = Path(images_path)
+    graph_dump_path = Path(encoding_path)
     state_dict = torch.load(path_to_model, map_location=torch.device(device))
     encoder = Encoder()
     encoder.load_state_dict(state_dict['encoder'])
@@ -29,6 +28,9 @@ if __name__ == "__main__":
         vector = encoder(image)
         z = vector.flatten()
         points.append({'z': z.tolist(), 'path': image_path})
-
     with graph_dump_path.open('w') as f:
         json.dump(points, f)
+
+
+if __name__ == "__main__":
+    encode(MODEL_PATH, IMAGES_PATH, ENCODING_PATH)

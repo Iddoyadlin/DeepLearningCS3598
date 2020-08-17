@@ -3,10 +3,8 @@ from torchvision import transforms
 import os
 import torch
 import PIL.Image as Image
-import matplotlib.pyplot as plt
-import numpy as np
 
-from utils import add_noise_to_img, to_img
+from utils import add_noise_to_img
 
 class ProjectDataset(Dataset):
 
@@ -55,16 +53,3 @@ class ProjectDataset(Dataset):
         image_noise = add_noise_to_img(image)
         sample = {'noise_img': image_noise, 'img' : image, 'path': img_name}
         return sample
-
-if __name__ == '__main__':
-
-    path = 'images/'
-    idx = 0
-
-    test_Dataset_class = ProjectDataset(path)
-    test = test_Dataset_class[idx]
-    image = test['noise_img'].unsqueeze(0)
-    img = to_img(image)[0].permute(1,2,0)
-    img = np.asarray(img)
-    plt.imshow(img)
-    plt.show()

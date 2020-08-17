@@ -6,32 +6,29 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
 
         self.conv1 = nn.Conv2d(3, 64, 3, stride=2, padding=1)
-        self.bn1 = nn.BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True)
         self.relu1 = nn.ReLU()
         self.maxpool1 = nn.MaxPool2d(2, stride=2)
 
         self.conv2 = nn.Conv2d(64, 32, 3, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True)
         self.relu2 = nn.ReLU()
         self.maxpool2 = nn.MaxPool2d(2, stride=1)
 
         self.conv3 = nn.Conv2d(32, 16, 3, stride=2)
-        self.bn3 = nn.BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True)
         self.relu3 = nn.ReLU()
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(144, 2)
 
     def forward(self, x):
         x = self.conv1(x)  # [b, 64, 22, 22]
-        x = self.bn1(x)
+
         x = self.relu1(x)
         x = self.maxpool1(x)  # [b, 64, 11, 11]
         x = self.conv2(x)  # [b, 16, 6, 6]
-        x = self.bn2(x)
+
         x = self.relu2(x)
         x = self.maxpool2(x)  # [b, 16, 5, 5]
         x = self.conv3(x)  # [b, 2, 2, 2]
-        x = self.bn3(x)
+
         x = self.relu3(x)
         x = self.flatten(x)
         x = self.fc1(x)  # [b, 2, 1, 1]
