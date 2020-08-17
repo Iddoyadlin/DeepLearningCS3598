@@ -4,6 +4,7 @@ import os
 import os.path as osp
 from PIL import Image
 from tqdm import tqdm
+import shutil
 
 def gram_matrix(y):
     (b, ch, h, w) = y.size()
@@ -11,6 +12,9 @@ def gram_matrix(y):
     features_t = features.transpose(1, 2)
     gram = features.bmm(features_t) / (ch * h * w)
     return gram
+
+def get_device():
+    return torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 def to_img(img):
     img = 0.5 * (img + 1)
@@ -22,6 +26,9 @@ def add_noise_to_img(img):
     noise = torch.randn(img.size()) * 0.2
     noisy_img = img + noise.to(img.device)
     return noisy_img
+
+def unpack_archive(path):
+    shutil.unpack_archive(path)
 
 def decompress_npz_to_images(path_to_file, path_to_decompress):
     """
