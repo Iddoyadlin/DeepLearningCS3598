@@ -86,7 +86,7 @@ if __name__ == "__main__":
         json.dump(run_configuration, f)
 
     new_model = AE(dims=dims)
-    new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims)
+    new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims, device=device)
 
     print('before saving model was:\n {}'.format(model.state_dict()))
     print('before saving model was:\n {}'.format(new_model.state_dict()))

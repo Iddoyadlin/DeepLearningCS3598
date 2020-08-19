@@ -69,12 +69,12 @@ class AE(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        vector = x.reshape(-1, x.size)
+        vector = x.reshape(-1, x.shape[1])
         x = self.decoder(vector)
         return x, vector
 
-    def load(self, path, dims):
-        dic = torch.load(path)
+    def load(self, path, dims, device):
+        dic = torch.load(path, map_location=torch.device(device))
         e = Encoder(dims)
         d = Decoder(dims)
         e.load_state_dict(dic['encoder'])

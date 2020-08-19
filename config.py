@@ -1,4 +1,4 @@
-IMAGES_PATH = 'images'
+IMAGES_PATH = 'images3d_object_color'
 PATH_TO_SAVE = 'runs'
-MODEL_PATH = r'benchmarks/model4/model3d_large_shape_with_bias.pth'
-ENCODING_PATH ='benchmarks/model4/encoding.json'
+MODEL_PATH = r'benchmarks/model5/model.pth'
+ENCODING_PATH ='benchmarks/model5/encoding.json'
