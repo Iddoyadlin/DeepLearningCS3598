@@ -1,3 +1,4 @@
+import json
 import os
 import os.path as osp
 import matplotlib.pyplot as plt
@@ -23,22 +24,13 @@ if __name__ == "__main__":
         wd=1e-5,
         num_epochs=600,
         batch_size=4,
-        step_size=150
+        step_size=150,
+        dims=2
     )
 
-    lr, wd, num_epochs, batch_size, step_size= tuple(run_configuration.values())
+    lr, wd, num_epochs, batch_size, step_size, dims= tuple(run_configuration.values())
     device = get_device()
-    dims = 2
     model = AE(dims=dims).to(device)
-    # from models.LossNN import LossNetwork
-    # import torchvision.models.vgg as vgg
-    # import torchvision.models.vgg as vgg
-    # vgg_model = vgg.vgg16(pretrained=True)
-    # loss_network = LossNetwork(vgg_model).to(device)
-    # loss_network.eval()
-    # criterion_weight = 0.3
-    # loss_network_weight = 0.7
-
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1)
@@ -86,13 +78,16 @@ if __name__ == "__main__":
 
             with open(loss_path, 'a+') as f:
                 f.write('epoch {} loss: {}\n'.format(epoch, loss_history[-1]))
+    print('***** Done training *****\n')
+
 
     model.save(os.path.join(save_run_as, 'model.pth'))
+    with open(os.path.join(save_run_as, 'config.json'), 'w') as f:
+        json.dump(run_configuration, f)
+
     new_model = AE(dims=dims)
     new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims)
 
     print('before saving model was:\n {}'.format(model.state_dict()))
     print('before saving model was:\n {}'.format(new_model.state_dict()))
     compare_models(model, new_model)
-
-    print('***** Done training *****\n')
