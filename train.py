@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     lr, wd, num_epochs, batch_size, step_size= tuple(run_configuration.values())
     device = get_device()
-
-    model = AE().to(device)
+    dims = 2
+    model = AE(dims=dims).to(device)
     # from models.LossNN import LossNetwork
     # import torchvision.models.vgg as vgg
     # import torchvision.models.vgg as vgg
@@ -88,8 +88,8 @@ if __name__ == "__main__":
                 f.write('epoch {} loss: {}\n'.format(epoch, loss_history[-1]))
 
     model.save(os.path.join(save_run_as, 'model.pth'))
-    new_model = AE()
-    new_model.load(osp.join(save_run_as, 'model.pth'))
+    new_model = AE(dims=dims)
+    new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims)
 
     print('before saving model was:\n {}'.format(model.state_dict()))
     print('before saving model was:\n {}'.format(new_model.state_dict()))

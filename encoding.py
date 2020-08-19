@@ -15,7 +15,8 @@ def encode(model_path, images_path, encoding_path):
     path_to_images = Path(images_path)
     graph_dump_path = Path(encoding_path)
     state_dict = torch.load(path_to_model, map_location=torch.device(device))
-    encoder = Encoder()
+    dims=3
+    encoder = Encoder(dims)
     encoder.load_state_dict(state_dict['encoder'])
     encoder.to(device)
     dataset = ProjectDataset(path_to_images, device=device)
@@ -30,7 +31,6 @@ def encode(model_path, images_path, encoding_path):
         points.append({'z': z.tolist(), 'path': image_path})
     with graph_dump_path.open('w') as f:
         json.dump(points, f)
-
 
 if __name__ == "__main__":
     encode(MODEL_PATH, IMAGES_PATH, ENCODING_PATH)

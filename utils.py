@@ -41,7 +41,7 @@ def decompress_npz_to_images(path_to_file, path_to_decompress):
     """
     data = np.load(path_to_file)['images']
     data = data.reshape([6, 6, 2, 3, 3, 40, 40, 64, 64, 3])
-    data_train = data[0, 0, 0, :, 0, :, :, :, :, :]
+    data_train = data[0, 0, 0, 0, 0, :, :, :, :, :]
     data_train = data_train.reshape(-1, 64, 64, 3)
 
     if not osp.exists(path_to_decompress):

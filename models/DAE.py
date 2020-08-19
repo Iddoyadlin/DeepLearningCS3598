@@ -1,22 +1,23 @@
 import torch
 from torch import nn
 
+bias = True
 class Encoder(nn.Module):
-    def __init__(self):
+    def __init__(self, dims):
         super(Encoder, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 64, 3, stride=2, padding=1)
+        self.conv1 = nn.Conv2d(3, 64, 3, stride=2, padding=1, bias=bias)
         self.relu1 = nn.ReLU()
         self.maxpool1 = nn.MaxPool2d(2, stride=2)
 
-        self.conv2 = nn.Conv2d(64, 32, 3, stride=2, padding=1)
+        self.conv2 = nn.Conv2d(64, 32, 3, stride=2, padding=1, bias=bias)
         self.relu2 = nn.ReLU()
         self.maxpool2 = nn.MaxPool2d(2, stride=1)
 
-        self.conv3 = nn.Conv2d(32, 16, 3, stride=2)
+        self.conv3 = nn.Conv2d(32, 16, 3, stride=2, bias=bias)
         self.relu3 = nn.ReLU()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(144, 2)
+        self.fc1 = nn.Linear(144, dims, bias=bias)
 
     def forward(self, x):
         x = self.conv1(x)  # [b, 64, 22, 22]
@@ -36,14 +37,14 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self):
+    def __init__(self, dims):
         super(Decoder, self).__init__()
-        self.fc1 = nn.Linear(2, 4096)
-        self.deconv1 = nn.ConvTranspose2d(16, 32, 3, stride=2)
+        self.fc1 = nn.Linear(dims, 4096, bias=bias)
+        self.deconv1 = nn.ConvTranspose2d(16, 32, 3, stride=2, bias=bias)
         self.relu1 = nn.ReLU()
-        self.deconv2 = nn.ConvTranspose2d(32, 64, 3, stride=2)
+        self.deconv2 = nn.ConvTranspose2d(32, 64, 3, stride=2, bias=bias)
         self.relu2 = nn.ReLU()
-        self.deconv3 = nn.ConvTranspose2d(64, 3, 2, stride=1, padding=2)
+        self.deconv3 = nn.ConvTranspose2d(64, 3, 2, stride=1, padding=2, bias=bias)
         self.tanh = nn.Tanh()
 
     def forward(self, x):
@@ -61,21 +62,21 @@ class Decoder(nn.Module):
 
 class AE(nn.Module):
 
-    def __init__(self):
+    def __init__(self, dims):
         super(AE, self).__init__()
-        self.encoder = Encoder()
-        self.decoder = Decoder()
+        self.encoder = Encoder(dims)
+        self.decoder = Decoder(dims)
 
     def forward(self, x):
         x = self.encoder(x)
-        vector = x.reshape(-1, 2)
+        vector = x.reshape(-1, x.size)
         x = self.decoder(vector)
         return x, vector
 
-    def load(self, path):
+    def load(self, path, dims):
         dic = torch.load(path)
-        e = Encoder()
-        d = Decoder()
+        e = Encoder(dims)
+        d = Decoder(dims)
         e.load_state_dict(dic['encoder'])
         d.load_state_dict(dic['decoder'])
         self.encoder = e
