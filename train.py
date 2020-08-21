@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     print('***** Start training *****\n')
     for epoch in range(num_epochs):
-        batch_losses = []
+        run_losses = []
         for i, data in tqdm(enumerate(trainloader)):
             optimizer.zero_grad()
 
@@ -74,10 +74,10 @@ if __name__ == "__main__":
             loss = criterion_weight * criterion_loss + loss_network_weight* perceptual_loss
             loss.backward()
             optimizer.step()
-            batch_losses.append(outputs.shape[0]* loss.item())
+            run_losses.append(outputs.shape[0] * loss.item())
         if scheduler is not None:
             scheduler.step()
-        epoch_loss = sum(batch_losses) / len(dataset)
+        epoch_loss = sum(run_losses) / len(dataset)
         loss_history.append(epoch_loss)
         print('\n epoch [{}/{}], loss:{:.6f}'.format(epoch + 1, num_epochs, epoch_loss))
 
