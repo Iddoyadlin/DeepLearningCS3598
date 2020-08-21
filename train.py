@@ -23,7 +23,7 @@ if __name__ == "__main__":
         lr=1e-2,
         wd=1e-5,
         num_epochs=600,
-        batch_size=4,
+        batch_size=8,
         step_size=150,
         dims=2
     )
@@ -31,6 +31,16 @@ if __name__ == "__main__":
     lr, wd, num_epochs, batch_size, step_size, dims= tuple(run_configuration.values())
     device = get_device()
     model = AE(dims=dims).to(device)
+
+    from models.LossNN import LossNetwork
+    import torchvision.models.vgg as vgg
+    vgg_model = vgg.vgg16(pretrained=True)
+    loss_network = LossNetwork(vgg_model).to(device)
+    loss_network.eval()
+    criterion_weight = 0.3
+    loss_network_weight = 0.7
+
+
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1)
@@ -54,8 +64,7 @@ if __name__ == "__main__":
         batch_losses = []
         for i, data in tqdm(enumerate(trainloader)):
             optimizer.zero_grad()
-            loss, outputs = model.loss(data, criterion,
-                                       #                loss_network, loss_network_weight, criterion_weight
+            loss, outputs = model.perceptual_loss(data, criterion, loss_network, loss_network_weight, criterion_weight
                                        )
             loss.backward()
             optimizer.step()

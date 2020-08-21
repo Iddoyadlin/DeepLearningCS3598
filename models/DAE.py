@@ -6,18 +6,18 @@ class Encoder(nn.Module):
     def __init__(self, dims):
         super(Encoder, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 64, 3, stride=2, padding=1, bias=bias)
+        self.conv1 = nn.Conv2d(3, 128, 3, stride=2, padding=1, bias=bias)
         self.relu1 = nn.ReLU()
         self.maxpool1 = nn.MaxPool2d(2, stride=2)
 
-        self.conv2 = nn.Conv2d(64, 32, 3, stride=2, padding=1, bias=bias)
+        self.conv2 = nn.Conv2d(128, 64, 3, stride=2, padding=1, bias=bias)
         self.relu2 = nn.ReLU()
         self.maxpool2 = nn.MaxPool2d(2, stride=1)
 
-        self.conv3 = nn.Conv2d(32, 16, 3, stride=2, bias=bias)
+        self.conv3 = nn.Conv2d(64, 32, 3, stride=2, bias=bias)
         self.relu3 = nn.ReLU()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(144, dims, bias=bias)
+        self.fc1 = nn.Linear(288, dims, bias=bias)
 
     def forward(self, x):
         x = self.conv1(x)  # [b, 64, 22, 22]
