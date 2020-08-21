@@ -11,9 +11,12 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 
-from config import IMAGES_PATH, PATH_TO_SAVE
+from config import PATH_TO_SAVE
 from dataset import ProjectDataset
 from models.DAE import AE
+
+from models.LossNN import LossNetwork
+import torchvision.models.vgg as vgg
 
 from utils import to_img, compare_models, get_device
 
@@ -22,24 +25,23 @@ if __name__ == "__main__":
     run_configuration = dict(
         lr=1e-2,
         wd=1e-5,
-        num_epochs=600,
+        num_epochs=400,
         batch_size=8,
-        step_size=150,
-        dims=2
+        step_size=100,
+        dims=2,
+        criterion_weight=0.3,
+        loss_network_weight=0.7,
+        out_channels=128,
+        noise=0.2,
+        IMAGES_PATH ='images2d'
     )
 
-    lr, wd, num_epochs, batch_size, step_size, dims= tuple(run_configuration.values())
+    lr, wd, num_epochs, batch_size, step_size, dims, criterion_weight, loss_network_weight, out_channels, noise, IMAGES_PATH= tuple(run_configuration.values())
     device = get_device()
-    model = AE(dims=dims).to(device)
-
-    from models.LossNN import LossNetwork
-    import torchvision.models.vgg as vgg
+    model = AE(dims=dims, out_channels=out_channels).to(device)
     vgg_model = vgg.vgg16(pretrained=True)
     loss_network = LossNetwork(vgg_model).to(device)
     loss_network.eval()
-    criterion_weight = 0.3
-    loss_network_weight = 0.7
-
 
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset = ProjectDataset(IMAGES_PATH, device)
+    dataset = ProjectDataset(IMAGES_PATH, device, noise=noise)
     trainloader = DataLoader(dataset, batch_size=batch_size, num_workers=0, shuffle=False)
 
     ##### Training
@@ -64,14 +66,18 @@ if __name__ == "__main__":
         batch_losses = []
         for i, data in tqdm(enumerate(trainloader)):
             optimizer.zero_grad()
-            loss, outputs = model.perceptual_loss(data, criterion, loss_network, loss_network_weight, criterion_weight
-                                       )
+
+            img = data['img']
+            outputs, _ = model(data['noise_img'])
+            perceptual_loss = model.perceptual_loss(img, outputs, criterion, loss_network, loss_network_weight)
+            criterion_loss = model.loss(img, outputs, criterion)
+            loss = criterion_weight * criterion_loss + loss_network_weight* perceptual_loss
             loss.backward()
             optimizer.step()
-            batch_losses.append(loss.item())
+            batch_losses.append(outputs.shape[0]* loss.item())
         if scheduler is not None:
             scheduler.step()
-        epoch_loss = sum(batch_losses) / len(batch_losses)
+        epoch_loss = sum(batch_losses) / len(dataset)
         loss_history.append(epoch_loss)
         print('\n epoch [{}/{}], loss:{:.6f}'.format(epoch + 1, num_epochs, epoch_loss))
 
@@ -86,16 +92,15 @@ if __name__ == "__main__":
                 os.remove(loss_path)
 
             with open(loss_path, 'a+') as f:
-                f.write('epoch {} loss: {}\n'.format(epoch, loss_history[-1]))
+                f.write('{}\n'.format(loss_history[-1]))
     print('***** Done training *****\n')
-
 
     model.save(os.path.join(save_run_as, 'model.pth'))
     with open(os.path.join(save_run_as, 'config.json'), 'w') as f:
         json.dump(run_configuration, f)
 
-    new_model = AE(dims=dims)
-    new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims, device=device)
+    new_model = AE(dims=dims, out_channels=out_channels)
+    new_model.load(osp.join(save_run_as, 'model.pth'), dims=dims, device=device, out_channels=out_channels)
 
     print('before saving model was:\n {}'.format(model.state_dict()))
     print('before saving model was:\n {}'.format(new_model.state_dict()))
