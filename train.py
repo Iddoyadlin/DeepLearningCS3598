@@ -10,7 +10,6 @@ import torch.optim as optim
 from torch import nn
 from torch.utils.data import DataLoader
 
-
 from config import PATH_TO_SAVE
 from dataset import ProjectDataset
 from models.DAE import AE

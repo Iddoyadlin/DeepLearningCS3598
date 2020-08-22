@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 
-from config import ENCODING_PATH, IMAGES_PATH, MODEL_PATH
+from config import MODEL_PATH
 from dataset import ProjectDataset
 from models.DAE import Encoder
 import json
@@ -9,17 +9,22 @@ from pathlib import Path
 
 from utils import get_device
 
-def encode(model_path, images_path, encoding_path):
+def encode(model_path):
     device = get_device()
-    path_to_model = Path(model_path)
-    path_to_images = Path(images_path)
-    graph_dump_path = Path(encoding_path)
+    path_to_model = Path(model_path) / Path('model.pth')
+    graph_dump_path = Path(model_path)/ Path('encoding.json')
+    config_path = Path(model_path) / Path('config.json')
+    with config_path.open() as f:
+        config = json.load(f)
+    images_path = config['IMAGES_PATH']
+    out_channels = config['out_channels']
+    dims = config['dims']
+
     state_dict = torch.load(path_to_model, map_location=torch.device(device))
-    dims=3
-    encoder = Encoder(dims)
+    encoder = Encoder(dims, out_channels)
     encoder.load_state_dict(state_dict['encoder'])
     encoder.to(device)
-    dataset = ProjectDataset(path_to_images, device=device)
+    dataset = ProjectDataset(images_path, device=device)
     data_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
 
     points = []
@@ -33,4 +38,4 @@ def encode(model_path, images_path, encoding_path):
         json.dump(points, f)
 
 if __name__ == "__main__":
-    encode(MODEL_PATH, IMAGES_PATH, ENCODING_PATH)
+    encode(MODEL_PATH)
