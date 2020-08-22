@@ -32,10 +32,12 @@ if __name__ == "__main__":
         loss_network_weight=0.7,
         out_channels=128,
         noise=0.2,
+        noise_type='normal',
         IMAGES_PATH ='images2d'
+
     )
 
-    lr, wd, num_epochs, batch_size, step_size, dims, criterion_weight, loss_network_weight, out_channels, noise, IMAGES_PATH= tuple(run_configuration.values())
+    lr, wd, num_epochs, batch_size, step_size, dims, criterion_weight, loss_network_weight, out_channels, noise, noise_type, IMAGES_PATH= tuple(run_configuration.values())
     device = get_device()
     model = AE(dims=dims, out_channels=out_channels).to(device)
     vgg_model = vgg.vgg16(pretrained=True)
@@ -53,7 +55,7 @@ if __name__ == "__main__":
     if not osp.exists(save_run_as):
         os.makedirs(save_run_as, exist_ok=True)
 
-    dataset = ProjectDataset(IMAGES_PATH, device, noise=noise)
+    dataset = ProjectDataset(IMAGES_PATH, device, noise=noise, noise_type=noise_type)
     trainloader = DataLoader(dataset, batch_size=batch_size, num_workers=0, shuffle=False)
 
     ##### Training

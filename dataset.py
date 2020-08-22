@@ -8,7 +8,7 @@ from utils import add_noise_to_img
 
 class ProjectDataset(Dataset):
 
-    def __init__(self, root_dir,device, endswith = '.jpg', cache=True, noise=0.2):
+    def __init__(self, root_dir,device, endswith = '.jpg', cache=True, noise=0.2, noise_type='normal'):
         """
         Args:
             root_dir (string): Directory with all the images.
@@ -27,6 +27,7 @@ class ProjectDataset(Dataset):
         self.cache = cache
         self.images_cache = [None] * len(self.img_list)
         self.noise = noise
+        self.noise_type = noise_type
 
     def get_img_paths(self):
         return self.img_list
@@ -51,6 +52,6 @@ class ProjectDataset(Dataset):
             idx = idx.tolist()
         img_name = os.path.join(self.root_dir, self.img_list[idx])
         image = self.get_img(idx)
-        image_noise = add_noise_to_img(image, self.noise)
+        image_noise = add_noise_to_img(image, self.noise, self.noise_type)
         sample = {'noise_img': image_noise, 'img' : image, 'path': img_name}
         return sample

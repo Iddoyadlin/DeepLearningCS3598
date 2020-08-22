@@ -27,10 +27,14 @@ def to_img(img):
     return img
 
 
-def add_noise_to_img(img, noise_param=0.2):
-    noise = torch.randn(img.size()) * noise_param
-    noisy_img = img + noise.to(img.device)
-    return noisy_img
+def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
+    if noise_type == 'normal':
+        noise = torch.randn(img.size()) * noise_param
+        return img + noise.to(img.device)
+    else:
+        noise = torch.rand(img.size())
+        img[noise < noise_param] = 0
+        return img
 
 
 def unpack_archive(path):
