@@ -29,12 +29,12 @@ def to_img(img):
     return img
 
 
-def add_to_zip(destination, sources, root_folder='/content/'):
-  filepath = '/content/' + destination +'.zip'
+def add_to_zip(destination, sources):
+  filepath = destination +'.zip'
   with zipfile.ZipFile(filepath, 'a') as zipf:
     for source_path in sources:
       destination = source_path.split('/')[-1]
-      zipf.write('/content/'+ source_path, destination)
+      zipf.write(source_path, destination)
   return filepath
 
 def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
@@ -42,6 +42,7 @@ def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
         noise = torch.randn(img.size()) * noise_param
         return img + noise.to(img.device)
     else:
+        img = img.clone()
         noise = torch.rand(img.size())
         img[noise < noise_param] = 0
         return img
