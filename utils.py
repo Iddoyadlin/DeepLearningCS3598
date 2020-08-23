@@ -1,3 +1,5 @@
+import zipfile
+
 import torch
 import numpy as np
 import os
@@ -26,6 +28,14 @@ def to_img(img):
     img = img.view(img.size(0), 3, 64, 64)
     return img
 
+
+def add_to_zip(destination, sources, root_folder='/content/'):
+  filepath = '/content/' + destination +'.zip'
+  with zipfile.ZipFile(filepath, 'a') as zipf:
+    for source_path in sources:
+      destination = source_path.split('/')[-1]
+      zipf.write('/content/'+ source_path, destination)
+  return filepath
 
 def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
     if noise_type == 'normal':
