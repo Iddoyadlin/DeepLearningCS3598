@@ -157,7 +157,6 @@ def compare_models(model_1, model_2):
 
 if __name__ == '__main__':
     path_to_npz = 'mpi3d_toy.npz'
-
     decompress_npz_to_images(path_to_npz, object_color=ObjectColor.WHITE,
                              object_shape=ObjectShape.CONE, object_size=ObjectSize.LARGE,
                              camera_height=CameraHeight.TOP, background_color=BackgroundColor.PURPLE)
