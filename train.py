@@ -55,7 +55,7 @@ if __name__ == "__main__":
     print('\n'.join([str(c) for c in run_configurations]))
     print(len(run_configurations))
 
-    for j, run_configuration in enumerate(run_configurations, start=1)
+    for j, run_configuration in enumerate(run_configurations, start=1):
         torch.manual_seed(42)
 
         lr, wd, num_epochs, batch_size, step_size, dims, criterion_weight, loss_network_weight, out_channels, noise, noise_type, IMAGES_PATH= tuple(run_configuration.values())
@@ -94,7 +94,10 @@ if __name__ == "__main__":
 
                 img = data['img']
                 outputs, _ = model(data['noise_img'])
-                perceptual_loss = model.perceptual_loss(img, outputs, criterion, loss_network, loss_network_weight)
+                if loss_network_weight>0:
+                    perceptual_loss = model.perceptual_loss(img, outputs, criterion, loss_network, loss_network_weight)
+                else:
+                    perceptual_loss =0
                 criterion_loss = model.loss(img, outputs, criterion)
                 loss = criterion_weight * criterion_loss + loss_network_weight* perceptual_loss
                 loss.backward()
@@ -130,4 +133,3 @@ if __name__ == "__main__":
         if RunningInCOLAB:
             from google.colab import files
             zip_path = add_to_zip(save_run_as, all_files)
-            files.download(zip_path)
