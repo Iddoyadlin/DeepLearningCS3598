@@ -4,7 +4,16 @@ import os
 import torch
 import PIL.Image as Image
 
-from utils import add_noise_to_img
+def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
+    if noise_type == 'normal':
+        noise = torch.randn(img.size()) * noise_param
+        return img + noise.to(img.device)
+    else:
+        img = img.clone()
+        noise = torch.rand(img.size())
+        img[noise < noise_param] = 0
+        return img
+
 
 class ProjectDataset(Dataset):
 

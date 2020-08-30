@@ -22,8 +22,6 @@ from utils import to_img, get_device, add_to_zip
 
 RunningInCOLAB = 'google.colab' in str(get_ipython())
 
-
-
 if __name__ == "__main__":
     batch_sizes = [4, 8, 16]
     weights = [(1, 0)]

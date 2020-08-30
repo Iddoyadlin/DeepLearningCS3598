@@ -4,19 +4,10 @@ import torch
 import numpy as np
 import os
 import os.path as osp
-from PIL import Image
 from tqdm import tqdm
 import shutil
 from enum import Enum
 from PIL import Image
-
-def gram_matrix(y):
-    (b, ch, h, w) = y.size()
-    features = y.view(b, ch, w * h)
-    features_t = features.transpose(1, 2)
-    gram = features.bmm(features_t) / (ch * h * w)
-    return gram
-
 
 def get_device():
     return torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -37,26 +28,9 @@ def add_to_zip(destination, sources):
       zipf.write(source_path, destination)
   return filepath
 
-def add_noise_to_img(img, noise_param=0.2, noise_type='normal'):
-    if noise_type == 'normal':
-        noise = torch.randn(img.size()) * noise_param
-        return img + noise.to(img.device)
-    else:
-        img = img.clone()
-        noise = torch.rand(img.size())
-        img[noise < noise_param] = 0
-        return img
-
 
 def unpack_archive(path):
     shutil.unpack_archive(path)
-
-
-def get_data_indices(data, dim, indices):
-    if indices == 'all':
-        return np.arange(data.shape[dim])
-    else:
-        return indices
 
 def img_2_gif(img_path, output_path):
     images = os.listdir(img_path)
