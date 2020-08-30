@@ -8,7 +8,7 @@ from PIL import Image
 from tqdm import tqdm
 import shutil
 from enum import Enum
-
+from PIL import Image
 
 def gram_matrix(y):
     (b, ch, h, w) = y.size()
@@ -58,6 +58,16 @@ def get_data_indices(data, dim, indices):
     else:
         return indices
 
+def img_2_gif(img_path, output_path):
+    images = os.listdir(img_path)
+    n_samples = len(images)
+    img2gif = []
+
+    for i in range(n_samples):
+        im = Image.open(os.path.join(img_path, 'image_{}.jpg'.format(i)))
+        img2gif.append(im)
+
+    img2gif[0].save(output_path, save_all=True, append_images=img2gif[1:], optimize=False, loop=0)
 
 class ObjectColor(Enum):
     WHITE = 0
