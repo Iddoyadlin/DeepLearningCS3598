@@ -1,2 +1,2 @@
 PATH_TO_SAVE = 'runs'
-MODEL_PATH = r'content/runs/lr_0.01_wd_1e-05_num_epochs_300_batch_size_4_step_size_75_dims_2_criterion_weight_1_loss_network_weight_0_out_channels_64_noise_0.1_noise_types_normal_IMAGES_PATH_images2d'
+MODEL_PATH = r'benchmarks/model8'
